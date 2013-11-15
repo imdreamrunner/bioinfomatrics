@@ -29,6 +29,7 @@ lenText = len(text)
 
 dic = {}
 
+"""
 geno = ["A", "T", "C", "G"]
 for i in range(4**(k-1),4**k):
     print(i/4**k)
@@ -37,6 +38,37 @@ for i in range(4**(k-1),4**k):
         key += geno[i%4]
         i //= 4
     dic[key] = getMatch(text, key, d)
+"""
+
+for i in range(lenText - k + 1):
+    key = text[i:i+k]
+    if not key in dic:
+        dic[key] = getMatch(text, key, d)
+
+currentKeys = list(dic.copy().keys())
+for i in range(len(currentKeys)):
+    for j in range(i+1, len(currentKeys)):
+        diff = 0
+        position = []
+        for num in range(k):
+            if currentKeys[i][num] != currentKeys[j][num]:
+                diff += 1
+                position.append(num)
+            if diff > d*2:
+                break
+        if d < diff <= d*2:
+            for newKeyID in range(2**diff):
+                newKey = currentKeys[i]
+                changeId = 0
+                while newKeyID > 0:
+                    if newKeyID%2 != 0:
+                        positionToChange = position[changeId]
+                        newKey = newKey[0:positionToChange] + currentKeys[j][positionToChange] + newKey[positionToChange+1:]
+                    newKeyID //= 2
+                    changeId += 1
+                if not newKey in dic:
+                    dic[newKey] = getMatch(text, newKey, d)
+                    
 
 maxValue = max(dic.values())
 print(" ".join([str(i) for i, value in dic.items() if value == maxValue]))
